@@ -4,6 +4,7 @@ import { Op } from 'sequelize';
 import { Project } from './entities/project.entity';
 import { User } from '../users/entities/user.entity';
 import { ProjectMember } from '../project-members/entities/project-member.entity';
+import { Task } from '../tasks/entities/task.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
@@ -16,6 +17,8 @@ export class ProjectsService {
     private userModel: typeof User,
     @InjectModel(ProjectMember)
     private projectMemberModel: typeof ProjectMember,
+    @InjectModel(Task)
+    private taskModel: typeof Task,
   ) {}
 
   async create(createProjectDto: CreateProjectDto) {
@@ -87,5 +90,18 @@ export class ProjectsService {
 
     await project.destroy();
     return { message: `Project ${id} deleted` };
+  }
+
+  async getProjectDetail(id: number, userId: number) {
+    const project = await this.checkAccess(id, userId);
+    const tasks = await this.taskModel.findAll({ where: { projectId: id } });
+    const members = await this.projectMemberModel.findAll({
+      where: { projectId: id, status: 'accepted' },
+    });
+    return {
+      ...project.toJSON(),
+      tasks,
+      members,
+    };
   }
 }

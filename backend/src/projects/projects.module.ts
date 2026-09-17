@@ -5,9 +5,10 @@ import { ProjectsController } from './projects.controller';
 import { Project } from './entities/project.entity';
 import { User } from '../users/entities/user.entity';
 import { ProjectMember } from '../project-members/entities/project-member.entity';
+import { Task } from '../tasks/entities/task.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Project, User, ProjectMember])],
+  imports: [SequelizeModule.forFeature([Project, User, ProjectMember, Task])],
   controllers: [ProjectsController],
   providers: [ProjectsService],
 })

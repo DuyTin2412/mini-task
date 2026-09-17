@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from '../auth/public.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -30,6 +31,14 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
+  }
+
+  @Patch('change-password')
+  changePassword(
+    @Body() body: { oldPassword: string; newPassword: string },
+    @CurrentUser() user: { userId: number },
+  ) {
+    return this.usersService.changePassword(user.userId, body.oldPassword, body.newPassword);
   }
 
   @Patch(':id')

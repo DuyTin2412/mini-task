@@ -3,53 +3,66 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { login } from '@/lib/auth';
 import { useGuestGuard } from '@/lib/useGuestGuard';
-export default function LoginPage() {
-  useGuestGuard(); 
+export default function RegisterPage() {
+  useGuestGuard();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
-    
+
+    if (password !== confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp.');
+      return;
+    }
+
+    setLoading(true);
     try {
-      await login(username, password);
-      router.push('/projects'); 
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, email }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Đăng ký thất bại');
+      }
+
+      router.push('/login');
     } catch (err) {
-      setError('Sai tên đăng nhập hoặc mật khẩu. Vui lòng thử lại!');
+      setError(err instanceof Error ? err.message : 'Đã xảy ra lỗi hệ thống');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gray-50 overflow-hidden font-sans">
       
-      {/* Background Decor mờ ảo phía sau */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
       <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
 
       <div className="relative z-10 w-full max-w-[420px] p-8 bg-white/90 backdrop-blur-xl border border-white rounded-3xl shadow-2xl">
         
-        {/* Header / Logo */}
         <div className="text-center mb-8">
           <div className="mx-auto bg-blue-600 w-12 h-12 flex items-center justify-center rounded-xl shadow-lg shadow-blue-600/30 mb-4">
             <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Đăng nhập hệ thống</h1>
-          <p className="text-sm text-gray-500 mt-2">Vui lòng nhập thông tin tài khoản để tiếp tục</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Tạo tài khoản mới</h1>
+          <p className="text-sm text-gray-500 mt-2">Bắt đầu quản lý công việc hiệu quả với MiniTask</p>
         </div>
 
-        {/* Thông báo Lỗi */}
         {error && (
           <div className="flex items-start gap-3 p-3.5 mb-6 bg-red-50 border border-red-100 rounded-xl animate-in fade-in slide-in-from-top-2">
             <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,9 +74,8 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Username */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Tên đăng nhập</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Username</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,15 +86,32 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Nhập username..."
+                placeholder="Ví dụ: nguyenvana"
                 className="block w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors bg-gray-50/50 focus:bg-white"
                 required
-                autoFocus
               />
             </div>
           </div>
 
-          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Email</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="nguyenvana@example.com"
+                className="block w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors bg-gray-50/50 focus:bg-white"
+                required
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Mật khẩu</label>
             <div className="relative">
@@ -95,25 +124,40 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Tối thiểu 6 ký tự"
                 className="block w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors bg-gray-50/50 focus:bg-white"
                 required
+                minLength={6}
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end pb-2">
-            <Link href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">
-              Quên mật khẩu?
-            </Link>
+          <div className="pb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Xác nhận mật khẩu</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Nhập lại mật khẩu"
+                className="block w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors bg-gray-50/50 focus:bg-white"
+                required
+                minLength={6}
+              />
+            </div>
           </div>
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={loading}
             className="w-full flex justify-center items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isLoading ? (
+            {loading ? (
               <>
                 <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -122,18 +166,17 @@ export default function LoginPage() {
                 Đang xử lý...
               </>
             ) : (
-              'Đăng nhập'
+              'Tạo tài khoản ngay'
             )}
           </button>
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-500">
-          Chưa có tài khoản?{' '}
-          <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500 hover:underline transition-colors">
-            Tạo tài khoản ngay
+          Đã có tài khoản?{' '}
+          <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-500 hover:underline transition-colors">
+            Đăng nhập
           </Link>
         </p>
-
       </div>
     </div>
   );

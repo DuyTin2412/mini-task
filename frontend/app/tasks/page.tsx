@@ -150,7 +150,7 @@ export default function TasksPage() {
           className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-          Thêm Task
+          Add Task
         </button>
       </div>
 
@@ -180,7 +180,7 @@ export default function TasksPage() {
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                       </div>
                       <p className="font-medium text-gray-500">Chưa có task nào</p>
-                      <p className="text-xs text-gray-400 mt-1">Bấm "Thêm Task" để tạo mới.</p>
+                      <p className="text-xs text-gray-400 mt-1">Bấm "Add Task" để tạo mới.</p>
                     </div>
                   </td>
                 </tr>
@@ -234,7 +234,7 @@ export default function TasksPage() {
             <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden pointer-events-auto border border-gray-100">
               <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  {selectedTask ? 'Cập nhật công việc' : 'Tạo công việc mới'}
+                  {selectedTask ? 'Cập nhật công việc' : 'Tạo Tasks mới'}
                 </h2>
                 <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -258,7 +258,7 @@ export default function TasksPage() {
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Nhập mô tả cho công việc này..."
+                    placeholder="Nhập mô tả cho task này..."
                     rows={3}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-colors resize-none"
                   />
@@ -328,7 +328,7 @@ export default function TasksPage() {
 
       <ConfirmDialog
         open={activeModal === 'DELETE'}
-        title="Xóa công việc?"
+        title="Xóa project?"
         message={`Bạn có chắc muốn xóa task "${selectedTask?.title}" không? Hành động này không thể hoàn tác.`}
         confirmText="Xóa ngay"
         onConfirm={handleDeleteConfirm}
