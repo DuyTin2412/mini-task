@@ -44,4 +44,8 @@ export class ProjectsController {
   remove(@Param('id') id: string, @CurrentUser() user: { userId: number }) {
     return this.projectsService.remove(+id, user.userId);
   }
+  @Get(':id/detail')
+    getDetail(@Param('id') id: string, @CurrentUser() user: { userId: number }) {
+  return this.projectsService.getProjectDetail(+id, user.userId);
+}
 }
